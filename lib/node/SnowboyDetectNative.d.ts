@@ -13,3 +13,5 @@ interface SnowboyDetectNativeInterface {
   BitsPerSample(): number;
   ApplyFrontend(applyFrontend: boolean): void;
 }
+
+export default SnowboyDetectNativeInterface;

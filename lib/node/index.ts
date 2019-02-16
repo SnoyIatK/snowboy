@@ -1,10 +1,15 @@
-import * as stream from 'stream';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as binary from 'node-pre-gyp';
+import * as stream from "stream";
+import * as path from "path";
+import * as fs from "fs";
+import * as binary from "node-pre-gyp";
 
-const bindingPath: string = binary.find(path.resolve(path.join(__dirname, '../../package.json')));
-const SnowboyDetectNative: SnowboyDetectNativeInterface = require(bindingPath).SnowboyDetect;
+const bindingPath: string = binary.find(
+  path.resolve(path.join(__dirname, "../../package.json"))
+);
+import SnowboyDetectNativeInterface from "./SnowboyDetectNative";
+
+const SnowboyDetectNative: SnowboyDetectNativeInterface = require(bindingPath)
+  .SnowboyDetect;
 
 enum DetectionResult {
   SILENCE = -2,
@@ -66,7 +71,7 @@ export class HotwordModels implements HotwordModels {
     const type = path.extname(model.file).toUpperCase();
 
     if (ModelType[type] === ModelType.PMDL && model.hotwords.length > 1) {
-      throw new Error('Personal models can define only one hotword.');
+      throw new Error("Personal models can define only one hotword.");
     }
 
     this.models.push(model);
@@ -74,17 +79,17 @@ export class HotwordModels implements HotwordModels {
   }
 
   get modelString(): string {
-    return this.models.map((model) => model.file).join();
+    return this.models.map(model => model.file).join();
   }
 
   get sensitivityString(): string {
-    return this.models.map((model) => model.sensitivity).join();
+    return this.models.map(model => model.sensitivity).join();
   }
 
   lookup(index: number): string {
     const lookupIndex = index - 1;
     if (lookupIndex < 0 || lookupIndex >= this.lookupTable.length) {
-      throw new Error('Index out of bounds.');
+      throw new Error("Index out of bounds.");
     }
     return this.lookupTable[lookupIndex];
   }
@@ -100,7 +105,8 @@ export class HotwordModels implements HotwordModels {
   }
 }
 
-export class SnowboyDetect extends stream.Writable implements SnowboyDetectInterface {
+export class SnowboyDetect extends stream.Writable
+  implements SnowboyDetectInterface {
   nativeInstance: SnowboyDetectNativeInterface;
   private models: HotwordModels;
 
@@ -108,10 +114,15 @@ export class SnowboyDetect extends stream.Writable implements SnowboyDetectInter
     super();
 
     this.models = options.models;
-    this.nativeInstance = new SnowboyDetectNative(options.resource, options.models.modelString);
+    this.nativeInstance = new SnowboyDetectNative(
+      options.resource,
+      options.models.modelString
+    );
 
     if (this.nativeInstance.NumHotwords() !== options.models.numHotwords()) {
-      throw new Error('Loaded hotwords count does not match number of hotwords defined.');
+      throw new Error(
+        "Loaded hotwords count does not match number of hotwords defined."
+      );
     }
 
     this.nativeInstance.SetSensitivity(options.models.sensitivityString);
@@ -185,20 +196,20 @@ export class SnowboyDetect extends stream.Writable implements SnowboyDetectInter
   private processDetectionResult(index: number, buffer: Buffer): void {
     switch (index) {
       case DetectionResult.ERROR:
-        this.emit('error');
+        this.emit("error");
         break;
 
       case DetectionResult.SILENCE:
-        this.emit('silence');
+        this.emit("silence");
         break;
 
       case DetectionResult.SOUND:
-        this.emit('sound', buffer);
+        this.emit("sound", buffer);
         break;
 
       default:
         const hotword = this.models.lookup(index);
-        this.emit('hotword', index, hotword, buffer);
+        this.emit("hotword", index, hotword, buffer);
         break;
     }
   }

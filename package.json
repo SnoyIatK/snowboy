@@ -9,9 +9,11 @@
     "module_path": "./lib/node/binding/{configuration}/{node_abi}-{platform}-{arch}/",
     "remote_path": "./{module_name}/v{version}/{configuration}/",
     "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz",
-    "host": "https://snowboy-release-node.s3-us-west-2.amazonaws.com"
+    "host": "https://github.com/SnoyIatK/snowboy/tree/master/binaries"
   },
   "scripts": {
+    "build": "tsc --listFiles",
+    "prepare": "npm run build",
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "node index.js",
     "prepublish": "tsc --listFiles"
@@ -28,12 +30,12 @@
   "gypfile": true,
   "license": "Apache-2.0",
   "dependencies": {
-    "node-pre-gyp": "^0.6.30"
+    "node-pre-gyp": "^0.12.0"
   },
   "devDependencies": {
     "@types/node": "^6.0.38",
     "aws-sdk": "2.x",
-    "nan": "^2.4.0",
+    "nan": "^2.11.0",
     "typescript": "^2.0.2"
   },
   "bugs": {
